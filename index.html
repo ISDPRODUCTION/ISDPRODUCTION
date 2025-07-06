@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebuah Pertanyaan Untukmu</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <!-- Canvas Confetti for celebration animation -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Custom font for a more personal touch */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .handwriting {
+            font-family: 'Pacifico', cursive;
+        }
+        /* Ensure the 'no' button has a smooth transition effect */
+        #noButton {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-pink-50 flex items-center justify-center h-screen overflow-hidden">
+
+    <div id="main-container" class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl text-center max-w-sm sm:max-w-md mx-4 transition-all duration-500">
+        
+        <!-- Initial question state -->
+        <div id="question-container">
+            <img id="question-gif" src="https://media1.tenor.com/m/gUiu1zyxfzYAAAAC/bear-love-bussi.gif" alt="Animasi beruang lucu" class="w-48 mx-auto mb-4 rounded-lg">
+            <h1 id="question-text" class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">Maukah kamu jadi pacarku?</h1>
+            
+            <div id="button-container" class="flex justify-center items-center gap-4">
+                <button id="yesButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
+                    Iya
+                </button>
+                <button id="noButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300">
+                    Tidak
+                </button>
+            </div>
+        </div>
+
+        <!-- Success message state (initially hidden) -->
+        <div id="success-message" class="hidden">
+            <img src="https://media1.tenor.com/m/k2-b13zJ4aQAAAAC/peach-goma-goma.gif" alt="Animasi perayaan" class="w-48 mx-auto mb-4 rounded-lg">
+            <h2 class="handwriting text-3xl sm:text-4xl text-pink-500 mb-2">Horeee!</h2>
+            <p class="text-xl sm:text-2xl font-bold text-gray-800">Sekarang kita resmi jadian! 🎉💖</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Get references to the HTML elements
+        const noButton = document.getElementById('noButton');
+        const yesButton = document.getElementById('yesButton');
+        const questionContainer = document.getElementById('question-container');
+        const successMessage = document.getElementById('success-message');
+        const mainContainer = document.getElementById('main-container');
+
+        // --- "No" Button Logic ---
+        // This function moves the 'No' button to a random position within the viewport.
+        const moveButton = () => {
+            // Get the dimensions of the viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Get the dimensions of the button
+            const buttonWidth = noButton.offsetWidth;
+            const buttonHeight = noButton.offsetHeight;
+
+            // Calculate the maximum possible coordinates for the button
+            const maxX = viewportWidth - buttonWidth;
+            const maxY = viewportHeight - buttonHeight;
+
+            // Generate random coordinates
+            const randomX = Math.floor(Math.random() * maxX);
+            const randomY = Math.floor(Math.random() * maxY);
+
+            // Apply the new position to the button
+            // We use 'position: absolute' to allow free movement
+            noButton.style.position = 'absolute';
+            noButton.style.left = `${randomX}px`;
+            noButton.style.top = `${randomY}px`;
+        };
+
+        // Add an event listener to the 'No' button.
+        // The 'mouseover' event triggers when the cursor hovers over the button.
+        noButton.addEventListener('mouseover', moveButton);
+        // Also add for touch devices, so it moves when they try to tap it.
+        noButton.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent click event from firing
+            moveButton();
+        });
+
+
+        // --- "Yes" Button Logic ---
+        // Add an event listener for the 'click' event on the 'Yes' button.
+        yesButton.addEventListener('click', () => {
+            // Hide the initial question and buttons
+            questionContainer.classList.add('hidden');
+            
+            // Show the celebratory success message
+            successMessage.classList.remove('hidden');
+
+            // Trigger the confetti celebration!
+            launchConfetti();
+        });
+
+        // --- Confetti Animation Logic ---
+        // This function creates a festive confetti effect.
+        const launchConfetti = () => {
+            const duration = 5 * 1000; // 5 seconds
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            const interval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Launch confetti from both sides of the screen
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+                confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+            }, 250);
+        };
+
+    </script>
+</body>
+</html>
